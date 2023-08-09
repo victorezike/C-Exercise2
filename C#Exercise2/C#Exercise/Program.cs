@@ -5,13 +5,21 @@
         static List<Member> members = new List<Member>();
         static List<Book> books = new List<Book>();
 
+        static string membersFilePath = "members.csv";
+        static string booksFilePath = "books.csv";
+
+
         static void Main(string[] args)
         {
             Console.WriteLine("Welcome to Victor's Library Management System!");
 
+
             books.Add(new Book(1, "How to kill two birds with one stone", "Adekunle"));
             books.Add(new Book(2, "Mastering Javascript", "Demola Ogunyemi"));
             books.Add(new Book(3, "Best in coding C#", "Victor Ezike"));
+
+            LoadMembersData();
+            LoadBooksData();
 
             bool exit = false;
             while (!exit)
@@ -50,6 +58,58 @@
                         break;
                 }
             }
+        }
+
+        static void LoadMembersData()
+        {
+            if (File.Exists(membersFilePath))
+            {
+                string[] lines = File.ReadAllLines(membersFilePath);
+                foreach (var line in lines)
+                {
+                    string[] parts = line.Split(',');
+                    if (parts.Length == 2 && int.TryParse(parts[0], out int memberId))
+                    {
+                        members.Add(new Member(memberId, parts[1]));
+                    }
+                }
+            }
+        }
+
+        static void LoadBooksData()
+        {
+            if (File.Exists(booksFilePath))
+            {
+                string[] lines = File.ReadAllLines(booksFilePath);
+                foreach (var line in lines)
+                {
+                    string[] parts = line.Split(',');
+                    if (parts.Length == 3 && int.TryParse(parts[0], out int bookId))
+                    {
+                        books.Add(new Book(bookId, parts[1], parts[2]));
+                    }
+                }
+            }
+        }
+
+        static void SaveMembersData()
+        {
+            List<string> lines = new List<string>();
+            foreach (var member in members)
+            {
+                lines.Add($"{member.MemberId},{member.Name}");
+            }
+            File.WriteAllLines(membersFilePath, lines);
+        }
+
+        static void SaveBooksData()
+        {
+            List<string> lines = new List<string>();
+            foreach (var book in books)
+            {
+                lines.Add($"{book.BookId},{book.Title},{book.Author}");
+            }
+            File.WriteAllLines(booksFilePath, lines);
         }
 
         static void RegisterMember()
